@@ -10,7 +10,7 @@ public class EnemyPatrol : MonoBehaviour {
     [SerializeField] private float attackspeed;
     [SerializeField] private float angularspeed;
     [SerializeField] private float acceleration;
-    [SerializeField] private float fieldOfViewAngle;
+    [SerializeField] private float distanceRange;
 
     [SerializeField]
     Transform _destination;
@@ -27,8 +27,6 @@ public class EnemyPatrol : MonoBehaviour {
     [SerializeField]
     List<Waypoint> _patrolPoints;
 
-    private SphereCollider col;
-
     public float range;
     public Transform player;
 
@@ -42,7 +40,6 @@ public class EnemyPatrol : MonoBehaviour {
 
     void Start()
     {
-        col = GetComponent<SphereCollider>();
         _navMeshAgent = this.GetComponent<NavMeshAgent>();
 
         if (_navMeshAgent == null)
@@ -83,40 +80,12 @@ public class EnemyPatrol : MonoBehaviour {
 
     void Update()
     {
-
-        Vector3 direction = transform.position - transform.position;
-        float angle = Vector3.Angle(direction, transform.forward);
-
-        if(angle < fieldOfViewAngle * 0.5f)
-        {
-            RaycastHit hit;
-
-            Debug.DrawRay(transform.position, direction, Color.green);
-
-            if (Physics.Raycast(transform.position + transform.up, direction.normalized, out hit, col.radius))
-            {
-                if (hit.collider.tag == "Player")
-                {
-                    Attack();
-                    _navMeshAgent.speed = attackspeed;
-                }
-                else
-                {
-                    Idle();
-                    _navMeshAgent.speed = idlespeed;
-                }
-            }
-        }
-
-        /*
-        RaycastHit sphereHit;
-
+        RaycastHit hit;
         Vector3 forward = transform.TransformDirection(Vector3.forward) * 50;
-        Debug.DrawRay(transform.position, forward, Color.green);
 
-        if(Physics.SphereCast(transform.position, castingRadius, out sphereHit, castingDistance))
+        if (Physics.Raycast(transform.position,(forward), out hit))
         {
-            if(hit.collider.tag == "Player")
+            if(hit.collider.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
             {
                 Attack();
                 _navMeshAgent.speed = attackspeed;
@@ -128,7 +97,7 @@ public class EnemyPatrol : MonoBehaviour {
             }
         }
 
-        
+        /*
         if (Vector3.Distance(player.position, transform.position) <= range)
         {
             Attack();

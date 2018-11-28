@@ -2827,10 +2827,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 12
-  idlespeed: 5
+  idlespeed: 6
   attackspeed: 12
   angularspeed: 20000000
   acceleration: 1000
+  distanceRange: 50
   _destination: {fileID: 1338142882}
   _patrolWaiting: 0
   _totalWaitTime: 3
@@ -3485,7 +3486,7 @@ GameObject:
   - component: {fileID: 1338142883}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
