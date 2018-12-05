@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour {
 
@@ -15,10 +14,6 @@ public class PlayerMove : MonoBehaviour {
 
     private CharacterController charController;
 
-    public bool activateTrigger;
-    public Text collectableText;
-    public int collected;
-
     private void Awake()
     {
         charController = GetComponent<CharacterController>();
@@ -28,24 +23,6 @@ public class PlayerMove : MonoBehaviour {
     private void Update()
     {
         PlayerMovement();
-       
-        RaycastHit hit;
-        Vector3 forward = transform.TransformDirection(Vector3.forward) * 1;
-
-        if (Physics.Raycast(transform.position, (forward), out hit, 3))
-        {
-            if (hit.collider.gameObject.tag == "CollectableItem" && Input.GetKeyDown(KeyCode.E))
-            {
-                hit.collider.gameObject.SetActive(false);
-
-                collected = collected + 1;
-
-                collectableText.text = ("Objects Collected: " + collected + "/20");
-
-                activateTrigger = false;
-
-            }
-        }
     }
 
     private void PlayerMovement()

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerLook : MonoBehaviour {
 
@@ -10,6 +11,18 @@ public class PlayerLook : MonoBehaviour {
     [SerializeField] private Transform playerBody;
 
     private float xAxisClamp;
+
+    public bool activateTrigger;
+    public Text collectableText;
+    public Text PressE;
+    public int collected;
+
+    public bool hasPickedUp;
+
+    public void Start()
+    {
+        PressE.text = ("");
+    }
 
     private void Awake()
     {
@@ -26,6 +39,41 @@ public class PlayerLook : MonoBehaviour {
     private void Update()
     {
         CameraRotation();
+
+        RaycastHit hit;
+        Vector3 forward = transform.TransformDirection(Vector3.forward) * 1.5f;
+
+        if (Physics.Raycast(transform.position, (forward), out hit, 3))
+        {
+            if (hit.collider.gameObject.tag == "CollectableItem" && Input.GetKeyDown(KeyCode.E))
+            {
+                hit.collider.gameObject.SetActive(false);
+
+                collected = collected + 1;
+
+                collectableText.text = ("Objects Collected: " + collected + "/20");
+
+                activateTrigger = false;
+
+                hasPickedUp = true;
+
+                PressE.text = ("");
+
+            } else if(hit.collider.gameObject.tag == "CollectableItem" && hasPickedUp == false)
+            {
+                PressE.text = ("Press 'E' To Pick Up");
+
+            } else if (hit.collider.gameObject.tag != "CollectableItem" && hasPickedUp == false)
+            {
+                PressE.text = ("");
+            }
+        }
+
+        if (collected == 20)
+        {
+            //
+        }
+
     }
 
     private void CameraRotation()

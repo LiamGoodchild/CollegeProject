@@ -36,6 +36,8 @@ public class EnemyPatrol : MonoBehaviour {
     bool _waiting;
     bool _patrolForward;
     float _waitTimer;
+    public float heightMultiplier;
+    public float sightDist = 10;
 
 
     void Start()
@@ -60,32 +62,44 @@ public class EnemyPatrol : MonoBehaviour {
         }
     }
 
-    /*
-    void Update()
+    void FixedUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Debug.Log("OMG! SO SPHERE! MUCH CASTING!");
-            RaycastHit sphereHit;
-            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Camera.main.pixelWidth / 2f, Camera.main.pixelHeight / 2f, 0f));
 
-            if (Physics.SphereCast(ray, castingRadius, out sphereHit, castingDistance))
+        RaycastHit hit;
+
+        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, transform.forward * sightDist, Color.green);
+        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized * sightDist, Color.green);
+        Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized * sightDist, Color.green);
+
+        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, transform.forward, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
+        {
+            if (hit.collider.gameObject.tag == "Player")
             {
-                Debug.Log("WOW! SOMETHING HIT!");
-                MGLConnector.TransformClicked(sphereHit.transform);
+                Attack();
+                _navMeshAgent.speed = attackspeed;
+            }
+            else
+            {
+                Idle();
+                _navMeshAgent.speed = idlespeed;
             }
         }
-    }
-    */
-
-    void Update()
-    {
-        RaycastHit hit;
-        Vector3 forward = transform.TransformDirection(Vector3.forward) * 50;
-
-        if (Physics.Raycast(transform.position,(forward), out hit))
+        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
         {
-            if(hit.collider.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
+            if (hit.collider.gameObject.tag == "Player")
+            {
+                Attack();
+                _navMeshAgent.speed = attackspeed;
+            }
+            else
+            {
+                Idle();
+                _navMeshAgent.speed = idlespeed;
+            }
+        }
+        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
+        {
+            if (hit.collider.gameObject.tag == "Player")
             {
                 Attack();
                 _navMeshAgent.speed = attackspeed;
@@ -97,19 +111,39 @@ public class EnemyPatrol : MonoBehaviour {
             }
         }
 
-        /*
-        if (Vector3.Distance(player.position, transform.position) <= range)
-        {
-            Attack();
-            _navMeshAgent.speed = attackspeed;
+
+
+
+            /*
+            Vector3 forward = transform.TransformDirection(Vector3.forward) * 50;
+
+            if (Physics.Raycast(transform.position,(forward), out hit))
+            {
+                if(hit.collider.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
+                {
+                    Attack();
+                    _navMeshAgent.speed = attackspeed;
+                }
+                else
+                {
+                    Idle();
+                    _navMeshAgent.speed = idlespeed;
+                }
+            }
+
+
+            if (Vector3.Distance(player.position, transform.position) <= range)
+            {
+                Attack();
+                _navMeshAgent.speed = attackspeed;
+            }
+            else
+            {
+                Idle();
+                _navMeshAgent.speed = idlespeed;
+            }
+            */
         }
-        else
-        {
-            Idle();
-            _navMeshAgent.speed = idlespeed;
-        }
-        */
-    }
 
     private void Idle()
     {
