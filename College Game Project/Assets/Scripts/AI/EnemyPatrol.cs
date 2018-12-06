@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class EnemyPatrol : MonoBehaviour {
 
@@ -29,6 +31,7 @@ public class EnemyPatrol : MonoBehaviour {
 
     public float range;
     public Transform player;
+    public Text GameOver;
 
     NavMeshAgent _navMeshAgent;
     int _currentPatrolIndex;
@@ -39,10 +42,11 @@ public class EnemyPatrol : MonoBehaviour {
     public float heightMultiplier;
     public float sightDist = 10;
 
-
     void Start()
     {
         _navMeshAgent = this.GetComponent<NavMeshAgent>();
+
+        GameOver.text = ("");
 
         if (_navMeshAgent == null)
         {
@@ -110,40 +114,7 @@ public class EnemyPatrol : MonoBehaviour {
                 _navMeshAgent.speed = idlespeed;
             }
         }
-
-
-
-
-            /*
-            Vector3 forward = transform.TransformDirection(Vector3.forward) * 50;
-
-            if (Physics.Raycast(transform.position,(forward), out hit))
-            {
-                if(hit.collider.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
-                {
-                    Attack();
-                    _navMeshAgent.speed = attackspeed;
-                }
-                else
-                {
-                    Idle();
-                    _navMeshAgent.speed = idlespeed;
-                }
-            }
-
-
-            if (Vector3.Distance(player.position, transform.position) <= range)
-            {
-                Attack();
-                _navMeshAgent.speed = attackspeed;
-            }
-            else
-            {
-                Idle();
-                _navMeshAgent.speed = idlespeed;
-            }
-            */
-        }
+    }
 
     private void Idle()
     {
@@ -238,6 +209,43 @@ public class EnemyPatrol : MonoBehaviour {
         {
             Vector3 targetVector = _destination.transform.position;
             _navMeshAgent.SetDestination(targetVector);
+        }
+    }
+
+    // Light Trigger
+
+    private void OnTriggerEnter(Collider col)
+    {
+        if(col.gameObject.tag == "InteractiveLight")
+        {
+            col.gameObject.GetComponent<Light>().enabled = false;
+        }
+    }
+
+    private void OnTriggerExit(Collider coll)
+    {
+        if (coll.gameObject.tag == "InteractiveLight")
+        {
+            coll.gameObject.GetComponent<Light>().enabled = true; 
+        }
+    }
+
+    // Game Ending Trigger
+
+    IEnumerator GameOverWait()
+    {
+        GameOver.text = ("GAME OVER");
+        Time.timeScale = 0.00001f;
+        yield return new WaitForSecondsRealtime(5);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnCollisionEnter(Collision col)
+    {
+        if(col.gameObject.tag == "Player")
+        {
+            StartCoroutine (GameOverWait ());
         }
     }
 

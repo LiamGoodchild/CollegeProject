@@ -15,6 +15,7 @@ public class PlayerLook : MonoBehaviour {
     public bool activateTrigger;
     public Text collectableText;
     public Text PressE;
+    public Text YouWin;
     public int collected;
 
     public bool hasPickedUp;
@@ -22,6 +23,7 @@ public class PlayerLook : MonoBehaviour {
     public void Start()
     {
         PressE.text = ("");
+        YouWin.text = ("");
     }
 
     private void Awake()
@@ -71,7 +73,8 @@ public class PlayerLook : MonoBehaviour {
 
         if (collected == 20)
         {
-            //
+            YouWin.text = ("YOU WIN");
+            Time.timeScale = 0.000001f;
         }
 
     }
