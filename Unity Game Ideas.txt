@@ -1,0 +1,6 @@
+
+Ideas:
+
+- Objects must be collected in a random order
+
+Floor Pattern Tiling: X = 35, Y= 43

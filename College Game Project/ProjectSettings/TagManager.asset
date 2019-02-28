@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CollectableItem
   - Grabable
+  - InteractiveLight
   layers:
   - Default
   - TransparentFX

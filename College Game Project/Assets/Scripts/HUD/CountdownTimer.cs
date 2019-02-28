@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CountdownTimer : MonoBehaviour {
 
@@ -9,11 +10,23 @@ public class CountdownTimer : MonoBehaviour {
 
     //public int timeLeft = 5;
     public Text countdownText;
+    public Text GameOver;
 
     // Use this for initialization
     void Start()
     {
         StartCoroutine("LoseTime");
+    }
+
+    // Game Over
+    IEnumerator GameOverWait()
+    {
+        GameOver.text = ("GAME OVER");
+        Time.timeScale = 0.00001f;
+        yield return new WaitForSecondsRealtime(5);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
     }
 
     // Update is called once per frame
@@ -25,11 +38,12 @@ public class CountdownTimer : MonoBehaviour {
 
         if (timeLeft <= 0)
         {
-            StopCoroutine("LoseTime");
-            countdownText.text = ("Time Left: Times Up!");
+            countdownText.text = ("Time Left: 00:00");
+            StartCoroutine(GameOverWait());
         }
     }
 
+    // Lose Time
     IEnumerator LoseTime()
     {
         while (true)

@@ -29,9 +29,15 @@ public class EnemyPatrol : MonoBehaviour {
     [SerializeField]
     List<Waypoint> _patrolPoints;
 
+    private AudioSource screamthing;
+
+
+    public Image image;
     public float range;
     public Transform player;
     public Text GameOver;
+
+    public AudioSource tickSource;
 
     NavMeshAgent _navMeshAgent;
     int _currentPatrolIndex;
@@ -46,7 +52,13 @@ public class EnemyPatrol : MonoBehaviour {
     {
         _navMeshAgent = this.GetComponent<NavMeshAgent>();
 
+        tickSource = GetComponent<AudioSource>();
+
+        screamthing = GetComponent<AudioSource>();
+
         GameOver.text = ("");
+
+        image.enabled = false;
 
         if (_navMeshAgent == null)
         {
@@ -75,9 +87,9 @@ public class EnemyPatrol : MonoBehaviour {
         Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized * sightDist, Color.green);
         Debug.DrawRay(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized * sightDist, Color.green);
 
-        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, transform.forward, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
+        if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, transform.forward, out hit, sightDist))
         {
-            if (hit.collider.gameObject.tag == "Player")
+            if (hit.collider.gameObject.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
             {
                 Attack();
                 _navMeshAgent.speed = attackspeed;
@@ -88,9 +100,9 @@ public class EnemyPatrol : MonoBehaviour {
                 _navMeshAgent.speed = idlespeed;
             }
         }
-        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
+        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward + transform.right).normalized, out hit, sightDist))
         {
-            if (hit.collider.gameObject.tag == "Player")
+            if (hit.collider.gameObject.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
             {
                 Attack();
                 _navMeshAgent.speed = attackspeed;
@@ -101,9 +113,9 @@ public class EnemyPatrol : MonoBehaviour {
                 _navMeshAgent.speed = idlespeed;
             }
         }
-        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized, out hit, sightDist) || Vector3.Distance(player.position, transform.position) <= distanceRange)
+        else if (Physics.Raycast(transform.position + Vector3.up * heightMultiplier, (transform.forward - transform.right).normalized, out hit, sightDist))
         {
-            if (hit.collider.gameObject.tag == "Player")
+            if (hit.collider.gameObject.tag == "Player" || Vector3.Distance(player.position, transform.position) <= distanceRange)
             {
                 Attack();
                 _navMeshAgent.speed = attackspeed;
@@ -234,9 +246,12 @@ public class EnemyPatrol : MonoBehaviour {
 
     IEnumerator GameOverWait()
     {
+        screamthing.enabled = false;
         GameOver.text = ("GAME OVER");
         Time.timeScale = 0.00001f;
+        //image.enabled = true;
         yield return new WaitForSecondsRealtime(5);
+        //image.enabled = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -245,6 +260,8 @@ public class EnemyPatrol : MonoBehaviour {
     {
         if(col.gameObject.tag == "Player")
         {
+            tickSource.PlayScheduled(AudioSettings.dspTime + 0.25f);
+            tickSource.Play();
             StartCoroutine (GameOverWait ());
         }
     }
